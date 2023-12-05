@@ -1035,6 +1035,10 @@ func mustRouteTable(num int) RouteTable {
 var (
 	mainRouteTable    = newRouteTable("main", 254)
 	defaultRouteTable = newRouteTable("default", 253)
+	// Port 9 - WAN
+	udmProRouteTable1 = newRouteTable("default", 201)
+	// Port 10 - SFP+ WAN 2
+	udmProRouteTable2 = newRouteTable("default", 202)
 
 	// tailscaleRouteTable is the routing table number for Tailscale
 	// network routes. See addIPRules for the detailed policy routing
@@ -1077,6 +1081,16 @@ var ipRules = []netlink.Rule{
 		Priority: 10,
 		Mark:     linuxfw.TailscaleBypassMarkNum,
 		Table:    mainRouteTable.Num,
+	},
+	{
+		Priority: 20,
+		Mark:     linuxfw.TailscaleBypassMarkNum,
+		Table:    udmProRouteTable1.Num,
+	},
+	{
+		Priority: 21,
+		Mark:     linuxfw.TailscaleBypassMarkNum,
+		Table:    udmProRouteTable2.Num,
 	},
 	// ...and then we try the 'default' table, for correctness,
 	// even though it's been empty on every Linux system I've ever seen.
